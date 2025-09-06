@@ -1,0 +1,14 @@
+# /etc/systemd/system/server-idle-shutdown.timer
+# Service to run the idle watchdog service periodically
+
+[Unit]
+Description=Run Server idle watchdog periodically
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+AccuracySec=30s
+Unit=server-idle-shutdown.service
+
+[Install]
+WantedBy=timers.target
