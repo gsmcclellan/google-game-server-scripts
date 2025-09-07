@@ -32,15 +32,11 @@ def write_last_active(ts: int):
     pathlib.Path(STATE_DIR).mkdir(parents=True, exist_ok=True)
     pathlib.Path(STATE_FILE).write_text(str(int(ts)))
 
-def query_player_count(host: str, port: int) -> tuple[bool,int]:
-    """Return (reachable, player_count)."""
+def query_player_count(host: str, port: int):
     addr = (host, int(port))
-    a2s.defaults.timeout = A2S_TIMEOUT
-    # Try a few times to ride out packet loss
     for _ in range(A2S_RETRIES):
         try:
-            info = a2s.info(addr)
-            # Prefer info.player_count (cheap); players() would be heavier
+            info = a2s.info(addr, timeout=A2S_TIMEOUT)  # timeout passed here
             return True, int(getattr(info, "player_count", 0))
         except Exception:
             time.sleep(A2S_RETRY_DELAY)
