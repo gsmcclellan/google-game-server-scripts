@@ -100,14 +100,14 @@ def main():
     else:
         log("A2S unreachable; not refreshing last_active (will not immediately shut down)")
 
-	grace_until = boot_ts + BOOT_GRACE_MINUTES*60
+    grace_until = boot_ts + BOOT_GRACE_MINUTES*60
     idle_sec = now - last_active
     threshold_sec = IDLE_MINUTES * 60
     log(f"Idle_for={idle_sec}s threshold={threshold_sec}s")
 
     if now < grace_until:
-	    log(f"In boot grace window ({grace_until - now}s left) -> do nothing")
-	    return
+        log(f"In boot grace window ({grace_until - now}s left) -> do nothing")
+        return
 
     if idle_sec >= threshold_sec:
         log(f"Idle >= threshold -> stopping container '{CONTAINER_NAME}' then powering off.")
