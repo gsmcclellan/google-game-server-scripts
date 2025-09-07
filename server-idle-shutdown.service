@@ -1,13 +1,13 @@
 
 [Unit]
-Description=Valheim idle watchdog (shut down VM when server empty too long)
+Description=Server idle watchdog (shut down VM when server empty too long)
 Wants=network-online.target
 After=network-online.target docker.service
 
 [Service]
 Type=oneshot
-EnvironmentFile=/etc/valheim-idle/config
-ExecStart=/usr/local/sbin/valheim-idle-shutdown.py
+EnvironmentFile=/opt/systemd-units/server-scripts/server-idle.env
+ExecStart=/opt/systemd-units/server-scripts/server-idle-shutdown.py
 User=root
 Group=root
 Nice=10

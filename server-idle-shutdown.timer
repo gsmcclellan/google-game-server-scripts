@@ -1,4 +1,4 @@
-# /etc/systemd/system/server-idle-shutdown.timer
+# /opt/systemd-units/server-scripts/server-idle-shutdown.timer
 # Service to run the idle watchdog service periodically
 
 [Unit]
