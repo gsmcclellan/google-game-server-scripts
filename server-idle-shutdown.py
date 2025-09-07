@@ -78,7 +78,7 @@ def boot_time_ts() -> int:
         return int(time.time())
 
 def main():
-	now = now_ts()
+    now = now_ts()
     boot_ts = boot_time_ts()
 
     last_active = read_last_active()
