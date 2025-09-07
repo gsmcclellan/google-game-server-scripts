@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os, time, pathlib, subprocess, socket, sys
 from datetime import datetime, timezone
+from pathlib import Path
 import a2s
 
 def env(name, default=None, cast=str):
@@ -22,11 +23,19 @@ STATE_DIR = str(pathlib.Path(STATE_FILE).parent)
 def now_ts() -> int:
     return int(time.time())
 
-def read_last_active() -> int:
-    try:
-        return int(pathlib.Path(STATE_FILE).read_text().strip())
-    except Exception:
-        return now_ts()  # initialize on first run
+def read_last_active():
+    p = Path(STATE_FILE)
+    if p.exists():
+        try:
+            return int(p.read_text().strip())
+        except Exception:
+            pass  # fall through to reset if file is corrupt
+
+    # First run or unreadable file: initialize and persist once
+    ts = now_ts()
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(str(ts))
+    return ts
 
 def write_last_active(ts: int):
     pathlib.Path(STATE_DIR).mkdir(parents=True, exist_ok=True)
