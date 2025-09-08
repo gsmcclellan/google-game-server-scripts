@@ -10,13 +10,13 @@ def env(name, default=None, cast=str):
     return cast(v)
 
 HOST              = env("SERVER_HOST", "127.0.0.1")
-PORT              = env("SERVER_QUERY_PORT", "2457", int)
+PORTS = [int(p) for p in str(env("VALHEIM_QUERY_PORT", "27016")).split(",")]
 IDLE_MINUTES      = env("IDLE_MINUTES", "60", int)
 BOOT_GRACE_MINUTES = env("BOOT_GRACE_MINUTES","3", int)
 A2S_TIMEOUT       = env("A2S_TIMEOUT_SEC", "2", float)
 A2S_RETRIES       = env("A2S_RETRIES", "3", int)
 A2S_RETRY_DELAY   = env("A2S_RETRY_DELAY_SEC", "3", float)
-STATE_FILE        = env("STATE_FILE", "/var/lib/server-idle/last_active.txt")
+STATE_FILE        = env("STATE_FILE", "/var/lib/server-idle/last_activez.txt")
 CONTAINER_NAME    = env("CONTAINER_NAME", "game-server")
 
 STATE_DIR = str(pathlib.Path(STATE_FILE).parent)
@@ -41,6 +41,16 @@ def read_last_active():
 def write_last_active(ts: int):
     pathlib.Path(STATE_DIR).mkdir(parents=True, exist_ok=True)
     pathlib.Path(STATE_FILE).write_text(str(int(ts)))
+
+def query_total_players(host: str, ports):
+    total = 0
+    any_ok = False
+    for p in ports:
+        ok, count = query_player_count(host, p)
+        if ok:
+            any_ok = True
+            total += count
+    return any_ok, total
 
 def query_player_count(host: str, port: int):
     addr = (host, int(port))
@@ -89,7 +99,7 @@ def main():
         last_active = boot_ts
         log("Reset last_active to boot time")
 
-    reachable, count = query_player_count(HOST, PORT)
+    reachable, count = query_total_players(HOST, PORTS)
 
     if reachable:
         log(f"A2S ok; players={count}")
