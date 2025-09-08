@@ -1,4 +1,4 @@
-# Valheim Idle Watchdog (auto-shutdown VM when empty)
+# Server Idle Watchdog (auto-shutdown VM when empty)
 
 Shuts down the GCP VM if the Valheim server has **zero players** for a configurable time window. Everything (units, script, config) lives in this Git repo. Systemd loads the units via absolute paths.
 
@@ -25,7 +25,7 @@ Shuts down the GCP VM if the Valheim server has **zero players** for a configura
 ```bash
 sudo install -d -m 755 /opt/systemd-units
 cd /opt/systemd-units
-sudo git clone <YOUR_REPO_URL> server-scripts
+sudo git clone https://github.com/gsmcclellan/google-game-server-scripts.git server-scripts
 cd server-scripts
 ```
 
@@ -65,9 +65,9 @@ Edit the env file in-repo:
 `/opt/systemd-units/server-scripts/server-idle.env`
 ```ini
 # VM queries this address/port (127.0.0.1 if ports are published to host)
-VALHEIM_HOST=127.0.0.1
+SERVER_HOST=127.0.0.1
 # Steam A2S query port (usually game port+1; Valheim default => 2457)
-VALHEIM_QUERY_PORT=2457
+SERVER_QUERY_PORT=2457
 
 # Minutes with zero players before shutdown
 IDLE_MINUTES=60
@@ -84,7 +84,7 @@ A2S_RETRY_DELAY_SEC=3
 STATE_FILE=/var/lib/server-idle/last_active.txt
 
 # Container to stop gracefully before poweroff
-CONTAINER_NAME=valheim-server
+CONTAINER_NAME=dst-server
 ```
 
 Changes to `server-idle.env` take effect on the **next timer run**; no reload required.
